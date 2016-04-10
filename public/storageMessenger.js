@@ -1,4 +1,5 @@
 var getStorageManager = (function () {
+
   return function() {
   	return {
   		set: function ( key , value, expiry ) {
@@ -28,7 +29,7 @@ var getStorageManager = (function () {
 				  } else if (typeof key === 'array') {
 				  	return;
 				  } else if (typeof key === 'object') {
-				  	self.set(property, value, expiry);
+				  	this.set(property, value, expiry);
 				  }
 			} catch(e) {
 				if (e.name === 'SyntaxError') {
