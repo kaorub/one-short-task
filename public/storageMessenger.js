@@ -36,7 +36,6 @@ var getStorageManager = (function () {
 						parsedValue.expiry = expiry;
 						localStorage.setItem(key, JSON.stringify(parsedValue));
 					}
-					return;
 				} else if (typeof parsedValue === 'array') {
 					return;
 				} else if (typeof parsedValue !== 'object') {
