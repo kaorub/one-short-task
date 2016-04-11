@@ -9,14 +9,15 @@ var getStorageManager = (function () {
 		},
 		get: function( key ) {
 			var o = JSON.parse(localStorage.getItem( key ));
-			var _value = o.value;
+			var _value = o.value || null;
 			var _time = o.expiry;
 			var _date = new Date();
 			_date = _date.getTime();
 			if (_date > _time) {
 				localStorage.removeItem(key);
-				return null;}
-		  	return _value;
+				throw new SyntaxError("Ошибка get key");
+			}
+		  	return _value;				
 		},
 		remove: function ( key ) {
 			localStorage.removeItem(key);
@@ -24,13 +25,23 @@ var getStorageManager = (function () {
 		},
 		setProperty: function( key , property, value, expiry ) {
 			try {
-				  if (typeof key !== 'object') {
-				    throw new SyntaxError("Ошибка key");
-				  } else if (typeof key === 'array') {
-				  	return;
-				  } else if (typeof key === 'object') {
-				  	this.set(property, value, expiry);
-				  }
+				var parsedValue = JSON.parse(localStorage.getItem(key));
+				if (typeof parsedValue === 'object') {
+					if (parsedValue === null) {
+						parsedValue = {};
+						parsedValue[property] = value;
+						this.set(key, parsedValue, expiry);
+					} else {
+						parsedValue.value[property] = value;
+						parsedValue.expiry = expiry;
+						localStorage.setItem(key, JSON.stringify(parsedValue));
+					}
+					return;
+				} else if (typeof parsedValue === 'array') {
+					return;
+				} else if (typeof parsedValue !== 'object') {
+					throw new SyntaxError("Ошибка setproperty key");
+				}
 			} catch(e) {
 				if (e.name === 'SyntaxError') {
 					alert('Error');
